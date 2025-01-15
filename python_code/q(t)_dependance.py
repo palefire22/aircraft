@@ -5,10 +5,10 @@ import numpy as np
 import math
 
 
-#Получает значения из всех файлов, которые определяет pointer(файл q или v) и x[i] элемент, возвращает двумерный массив типа float
-def file_get(x, pointer):
+#Получает значения из всех файлов, которые определяет pointer(файл q или v) и x0[i] элемент, возвращает двумерный массив типа float
+def file_get(x0, pointer):
     grand_massive = []
-    for q in x:
+    for q in x0:
         file_name = 'q(v)_stat/'+ pointer + '_if_q0_equals' + str(round(q, 2))
         with open(file_name, 'r') as file:
             q = []
@@ -17,6 +17,37 @@ def file_get(x, pointer):
         grand_massive.append(q)
         file.close()
     return grand_massive
+
+#Непосредственно сама функция, принимает угол q=x и его индекс в массиве
+def f(x,i, j):  # непосредственно сама функция
+    cxa = 1  # коэфф лобового сопротивления
+    cya = 1  # коэфф подъемной силы
+    p = 1000  # плотность воздуха (кг/м3)
+    s = 128 * (10 ** (-4)) * 2  # площадь крыла(см2) * (10**(-4)) * 2 шт.
+    m = 0.03 #масса самолета
+    gg = m * 9.815  # масса самолета(кг) * уск. своб падения
+    v = v_grand_massive[j][i]
+
+    funct = ((-1) * cya * p *  s / 2 * (v**2) - gg * math.cos(x))  / (m * v)# значение функции в точке
+    return funct
+
+#Видоизмененный под наши нужды метод Рунге-Кутта 4 порядка
+def runge_kutta(f, y0, x0, j):
+    #y0 = 0
+    n = len(x0)
+    x = x0
+    y = np.zeros(n)
+    y[0] = y0
+
+    for i in range(1, n):
+        h = x[i] - x[i-1]
+        k1 = h * f(x[i - 1], i - 1, j)
+        k2 = h * f(x[i - 1] + h / 2, i - 1, j)
+        k3 = h * f(x[i - 1] + h / 2, i - 1, j)
+        k4 = h * f(x[i - 1] + h, i - 1, j)
+        y[i] = y[i - 1] + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+    return x, y
 
 #Начальные условия
 y0 = 3.5  # начальное значение скорости(м/c)
@@ -29,20 +60,14 @@ v_grand_massive = file_get(x0, 'v') #массив массивов для v
 ######
 
 
-
-
-
-
-
-
-x = q_grand_massive[5]
-y = v_grand_massive[5]
-
-plt.plot(x, y, label='v(q); q0 = ' + str(round(x0[5], 2)) + 'рад')
-plt.title('Решение дифференциального уравнения dv/dq = f(v,q) при q = ' + str(round(x0[5], 2)) + 'рад')
-plt.xlabel('Угол наклона траектории q, рад')
-plt.ylabel('Модуль скорости ЛА v, м/c')
-#plt.legend()
-plt.grid()
-plt.show()
+length = len(x0)
+for i in range(0, length):
+    x, y = runge_kutta(f, 0, q_grand_massive[i], i)
+    plt.plot(y, x, label='q(t) при q0 = ' + str(round(x0[i], 2)))
+    plt.title('Решение dq/dt = f(q) при q0 =' + str(round(x0[i], 2)))
+    plt.xlabel('Время полёта t, с')
+    plt.ylabel('Угол наклона траектории q, рад')
+    plt.legend()
+    plt.grid()
+    plt.show()
 
