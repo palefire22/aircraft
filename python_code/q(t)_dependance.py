@@ -20,9 +20,9 @@ def file_get(x0, pointer):
 
 #Непосредственно сама функция, принимает угол q=x и его индекс в массиве
 def f(x,i, j):  # непосредственно сама функция
-    cxa = 1  # коэфф лобового сопротивления
-    cya = 1  # коэфф подъемной силы
-    p = 1000  # плотность воздуха (кг/м3)
+    cxa = 0.1  # коэфф лобового сопротивления
+    cya = 0.1  # коэфф подъемной силы
+    p = 1.23  # плотность воздуха (кг/м3)
     s = 128 * (10 ** (-4)) * 2  # площадь крыла(см2) * (10**(-4)) * 2 шт.
     m = 0.03 #масса самолета
     gg = m * 9.815  # масса самолета(кг) * уск. своб падения
@@ -49,6 +49,18 @@ def runge_kutta(f, y0, x0, j):
 
     return x, y
 
+# Запускает метод рунге-кутта для выданных значений, затем строит график решения
+def runge_kutta_init(f, y0, grand_massive, i):
+    x, y = runge_kutta(f, 0, q_grand_massive[i], i)
+    plt.plot(y, x, label='q(t) при q0 = ' + str(round(x0[i], 2)))
+    plt.title('Решение dq/dt = f(q) при q0 =' + str(round(x0[i], 2)))
+    plt.xlabel('Время полёта t, с')
+    plt.ylabel('Угол наклона траектории q, рад')
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+
 #Начальные условия
 y0 = 3.5  # начальное значение скорости(м/c)
 x0_grad = [2.8, 6.8, 18.1, 23.4, 39.2, 48.6]  # начальное значение угла наклона траектории в градусах
@@ -62,12 +74,6 @@ v_grand_massive = file_get(x0, 'v') #массив массивов для v
 
 length = len(x0)
 for i in range(0, length):
-    x, y = runge_kutta(f, 0, q_grand_massive[i], i)
-    plt.plot(y, x, label='q(t) при q0 = ' + str(round(x0[i], 2)))
-    plt.title('Решение dq/dt = f(q) при q0 =' + str(round(x0[i], 2)))
-    plt.xlabel('Время полёта t, с')
-    plt.ylabel('Угол наклона траектории q, рад')
-    plt.legend()
-    plt.grid()
-    plt.show()
+    runge_kutta_init(f, 0, q_grand_massive[i], i)
+
 
