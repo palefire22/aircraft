@@ -49,8 +49,8 @@ def runge_kutta_init(f, yo, x0, x_end, h):
 
 #Выводит в файлы с названиями q_if_q0_equals... и v_if_q0_equals... точку q[i] и v[i] соотв.
 def file_input(x, y, i):
-    xfile_name = 'q_if_q0_equals' + str(round(x0[i], 2))
-    yfile_name = 'v_if_q0_equals' + str(round(x0[i], 2))
+    xfile_name = 'q(v)_stat/q_if_q0_equals' + str(round(x0[i], 2))
+    yfile_name = 'q(v)_stat/v_if_q0_equals' + str(round(x0[i], 2))
     with open(xfile_name, "w") as xfile:
         for i in x:
             xfile.write(str(i) + '\n')
@@ -66,9 +66,9 @@ y0 = 3.5  # начальное значение скорости(м/c)
 x0_grad = [2.8, 6.8, 18.1, 23.4, 39.2, 48.6]  # начальное значение угла наклона траектории в градусах
 x_end_grad = [-22, -30.9, -36.3, -44.5, -63.2, -64.6]  # конечное значение угла наклона траектории в градусах
 h = -0.01  # шаг
-
 x0 = list(map(lambda x: math.radians(x), x0_grad))  # начальное значение угла наклона траектории в радианах
 x_end = list(map(lambda x: math.radians(x), x_end_grad))  # конечное значение угла наклона траектории в радианах
+#####
 
 length = len(x0_grad)
 for i in range(0, length):
