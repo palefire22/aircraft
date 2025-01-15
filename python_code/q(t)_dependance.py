@@ -49,7 +49,8 @@ def runge_kutta(f, y0, x0, j):
 
     return x, y
 
-# Запускает метод рунге-кутта для выданных значений, затем строит график решения
+# Запускает метод рунге-кутта для выданных значений, затем строит график решения q(t)
+# !!!!Меняет координатные оси, т.е. по x будет t и возвращает массивы в порядке 'параметр' 'значение'
 def runge_kutta_init(f, y0, grand_massive, i):
     x, y = runge_kutta(f, 0, q_grand_massive[i], i)
     plt.plot(y, x, label='q(t) при q0 = ' + str(round(x0[i], 2)))
@@ -59,7 +60,21 @@ def runge_kutta_init(f, y0, grand_massive, i):
     plt.legend()
     plt.grid()
     plt.show()
+    return y, x
 
+#Выводит в файлы с названиями q_if_q0_equals... и v_if_q0_equals... точку q[i] и v[i] соотв.
+def file_input(x, y, i):
+    xfile_name = 'q(t)_stat/t_if_q0_equals' + str(round(x0[i], 2))
+    yfile_name = 'q(t)_stat/q_if_q0_equals' + str(round(x0[i], 2))
+    with open(xfile_name, "w") as xfile:
+        for i in x:
+            xfile.write(str(i) + '\n')
+    with open(yfile_name, "w") as yfile:
+        for j in y:
+            yfile.write(str(j) + '\n')
+
+    xfile.close()
+    yfile.close()
 
 #Начальные условия
 y0 = 3.5  # начальное значение скорости(м/c)
@@ -74,6 +89,7 @@ v_grand_massive = file_get(x0, 'v') #массив массивов для v
 
 length = len(x0)
 for i in range(0, length):
-    runge_kutta_init(f, 0, q_grand_massive[i], i)
+    x, y = runge_kutta_init(f, 0, q_grand_massive[i], i)
+    file_input(x, y, i)
 
 
