@@ -4,8 +4,6 @@ import numpy as np
 #import scipy as sp
 import math
 
-
-#Получает значения из всех файлов, которые определяет pointer(файл q или v) и x0[i] элемент, возвращает двумерный массив типа float
 def file_get(x0, pointer):
     grand_massive = []
     for q in x0:
@@ -18,17 +16,18 @@ def file_get(x0, pointer):
         file.close()
     return grand_massive
 
-#Непосредственно сама функция, принимает угол q=x и его индекс в массиве
-def f(x,i, j):  # непосредственно сама функция
+#непосредственно сама функция
+def f(x,i, j):
     cxa = 0.1  # коэфф лобового сопротивления
     cya = 0.1  # коэфф подъемной силы
     p = 1.23  # плотность воздуха (кг/м3)
     s = 128 * (10 ** (-4)) * 2  # площадь крыла(см2) * (10**(-4)) * 2 шт.
     m = 0.03 #масса самолета
     gg = m * 9.815  # масса самолета(кг) * уск. своб падения
-    v = v_grand_massive[j][i]
+    t = t_grand_massive[j][i]
 
-    funct = ((-1) * cya * p *  s / 2 * (v**2) - gg * math.cos(x))  / (m * v)# значение функции в точке
+
+    funct = 0# значение функции в точке
     return funct
 
 #Видоизмененный под наши нужды метод Рунге-Кутта 4 порядка
@@ -63,9 +62,9 @@ def runge_kutta_init(f, y0, grand_massive, i):
     return y, x
 
 #Выводит в файлы с названиями q_if_q0_equals... и v_if_q0_equals... точку q[i] и v[i] соотв.
-def file_output(x, y, i):
-    xfile_name = 'stat/t_if_q0_equals' + str(round(x0[i], 2))
-    yfile_name = 'stat/q_if_q0_equals' + str(round(x0[i], 2))
+def file_input(x, y, i):
+    xfile_name = 'q(t)_stat/t_if_q0_equals' + str(round(x0[i], 2))
+    yfile_name = 'q(t)_stat/q_if_q0_equals' + str(round(x0[i], 2))
     with open(xfile_name, "w") as xfile:
         for i in x:
             xfile.write(str(i) + '\n')
@@ -83,13 +82,8 @@ x_end_grad = [-22, -30.9, -36.3, -44.5, -63.2, -64.6]  # конечное зна
 x0 = list(map(lambda x: math.radians(x), x0_grad))  # начальное значение угла наклона траектории в радианах
 x_end = list(map(lambda x: math.radians(x), x_end_grad))  # конечное значение угла наклона траектории в радианах
 q_grand_massive = file_get(x0, 'q') #массив массивов для q
-v_grand_massive = file_get(x0, 'v') #массив массивов для v
+t_grand_massive = file_get(x0, 't') #массив массивов для t
+v_grand_massive = file_get(x0, 'v') #массив массивов для t
 ######
-
-
-length = len(x0)
-for i in range(0, length):
-    x, y = runge_kutta_init(f, 0, q_grand_massive[i], i)
-    file_output(x, y, i)
 
 

@@ -48,9 +48,9 @@ def runge_kutta_init(f, yo, x0, x_end, h):
     return x, y
 
 #Выводит в файлы с названиями q_if_q0_equals... и v_if_q0_equals... точку q[i] и v[i] соотв.
-def file_input(x, y, i):
-    xfile_name = 'q(v)_stat/q_if_q0_equals' + str(round(x0[i], 2))
-    yfile_name = 'q(v)_stat/v_if_q0_equals' + str(round(x0[i], 2))
+def file_output(x, y, i):
+    xfile_name = 'stat/q_if_q0_equals' + str(round(x0[i], 2))
+    yfile_name = 'stat/v_if_q0_equals' + str(round(x0[i], 2))
     with open(xfile_name, "w") as xfile:
         for i in x:
             xfile.write(str(i) + '\n')
@@ -73,4 +73,4 @@ x_end = list(map(lambda x: math.radians(x), x_end_grad))  # конечное з�
 length = len(x0_grad)
 for i in range(0, length):
     x, y = runge_kutta_init(f, y0, x0[i], x_end[i], h)
-    file_input(x, y, i) #Вывод в txt файлы всех точек
+    file_output(x, y, i) #Вывод в txt файлы всех точек
