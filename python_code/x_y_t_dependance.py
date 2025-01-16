@@ -17,17 +17,24 @@ def file_get(x0, pointer):
     return grand_massive
 
 #непосредственно сама функция
-def f(x,i, j):
+
+def fy(x, i, j):
+    v = v_grand_massive[j][i]
+    q = q_grand_massive[j][i]
+    funct = v * math.sin(q)  # значение функции в точке
+    return funct
+
+#Непосредственно сама функция, принимает угол q=x и его индекс в массиве
+def fx(x,i, j):  # непосредственно сама функция
     cxa = 0.1  # коэфф лобового сопротивления
     cya = 0.1  # коэфф подъемной силы
     p = 1.23  # плотность воздуха (кг/м3)
     s = 128 * (10 ** (-4)) * 2  # площадь крыла(см2) * (10**(-4)) * 2 шт.
     m = 0.03 #масса самолета
     gg = m * 9.815  # масса самолета(кг) * уск. своб падения
-    t = t_grand_massive[j][i]
-
-
-    funct = 0# значение функции в точке
+    v = v_grand_massive[j][i]
+    q = q_grand_massive[j][i]
+    funct = v * math.cos(q)# значение функции в точке
     return funct
 
 #Видоизмененный под наши нужды метод Рунге-Кутта 4 порядка
@@ -50,21 +57,20 @@ def runge_kutta(f, y0, x0, j):
 
 # Запускает метод рунге-кутта для выданных значений, затем строит график решения q(t)
 # !!!!Меняет координатные оси, т.е. по x будет t и возвращает массивы в порядке 'параметр' 'значение'
-def runge_kutta_init(f, y0, grand_massive, i):
-    x, y = runge_kutta(f, 0, q_grand_massive[i], i)
-    plt.plot(y, x, label='q(t) при q0 = ' + str(round(x0[i], 2)))
-    plt.title('Решение dq/dt = f(q) при q0 =' + str(round(x0[i], 2)))
+def runge_kutta_init(f, y0, grand_massive, i, pointer):
+    x, y = runge_kutta(f, 0, t_grand_massive[i], i)
+    plt.plot(x, y, label= pointer + '(t) при q0 = ' + str(round(x0[i], 2)))
+    plt.title('Решение d' + pointer + '/dt = f(t) при q0 =' + str(round(x0[i], 2)))
     plt.xlabel('Время полёта t, с')
-    plt.ylabel('Угол наклона траектории q, рад')
+    plt.ylabel('Координата ' + pointer + ', м')
     plt.legend()
     plt.grid()
     plt.show()
-    return y, x
+    return x, y
 
-#Выводит в файлы с названиями q_if_q0_equals... и v_if_q0_equals... точку q[i] и v[i] соотв.
-def file_input(x, y, i):
-    xfile_name = 'q(t)_stat/t_if_q0_equals' + str(round(x0[i], 2))
-    yfile_name = 'q(t)_stat/q_if_q0_equals' + str(round(x0[i], 2))
+def file_output(x, y, i):
+    xfile_name = 'stat/x_if_q0_equals' + str(round(x0[i], 2))
+    yfile_name = 'stat/y_if_q0_equals' + str(round(x0[i], 2))
     with open(xfile_name, "w") as xfile:
         for i in x:
             xfile.write(str(i) + '\n')
@@ -85,5 +91,11 @@ q_grand_massive = file_get(x0, 'q') #массив массивов для q
 t_grand_massive = file_get(x0, 't') #массив массивов для t
 v_grand_massive = file_get(x0, 'v') #массив массивов для t
 ######
+
+length = len(x0)
+for i in range(0, length):
+    x1, y1 = runge_kutta_init(fx, 0, t_grand_massive[i], i, 'x')
+    x2, y2 = runge_kutta_init(fy, 0, t_grand_massive[i], i, 'y')
+    file_output(y1, y2, i)
 
 
