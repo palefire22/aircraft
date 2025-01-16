@@ -17,18 +17,17 @@ def file_get(x0, pointer):
     return grand_massive
 
 def draw_segment(start_point, angle, length):
-    # Начальная точка
-    x0, y0 = start_point
 
+    x0, y0 = start_point # начальная точка
 
-    # Конечная точка
+    length = length * (-angle) #настройка длины
+
+    # конечная точка
     x1 = x0 + length * np.cos(angle)
     y1 = y0 + length * np.sin(angle)
 
-    # Рисуем отрезок
     plt.plot([x0, x1], [y0, y1], marker='o')
 
-    # Настройка графика
     plt.axhline(0, color='black', lw=0.5, ls='--')
     plt.axvline(0, color='black', lw=0.5, ls='--')
 
